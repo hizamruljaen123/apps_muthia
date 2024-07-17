@@ -42,7 +42,41 @@ function loadData() {
 }
 
 loadData();
+async function fetchDataAndPopulateTable() {
+    try {
+        const response = await fetch('/get_data'); // Ganti dengan URL API Anda
+        const data = await response.json();
 
+        const tableBody = document.getElementById('dataMahasiswa');
+        tableBody.innerHTML = ''; // Kosongkan isi tabel sebelum menambahkan data
+
+        data.forEach(item => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${item.nama}</td>
+                <td>${item.nim}</td>
+                <td>${item.jurusan}</td>
+                <td>${item.status_kemahasiswaan}</td>
+                <td>${item.pernah_ikut_mbmk}</td>
+                <td>${item.pernah_mbkm_apapun}</td>
+                <td>${item.lolos_mbkm}</td>
+                <td>${item.performa_ipk}</td>
+                <td>${item.nilai_ipk}</td>
+                <td>${item.ikut_organisasi}</td>
+                <td>${item.jumlah_organisasi}</td>
+                <td><a href="${item.upload_sertifikat}" class="button is-link is-small">Lihat Dokumen</a></td>
+                <td><a href="${item.scan_ktp}" class="button is-link is-small">Lihat Dokumen</a></td>
+                <td><a href="${item.upload_cv}" class="button is-link is-small">Lihat Dokumen</a></td>
+                <td><a href="${item.upload_surat_rekomendasi}" class="button is-link is-small">Lihat Dokumen</a></td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
 function fetchDataHasil() {
     fetch('/predict')
       .then(response => response.json())
@@ -122,6 +156,7 @@ document.getElementById('close-modal-footer').addEventListener('click', function
 });
 document.getElementById('open-modal-data').addEventListener('click', function() {
     document.getElementById('dataModal').classList.add('is-active');
+    fetchDataAndPopulateTable()
 });
 
 document.getElementById('close-modal-data').addEventListener('click', function() {

@@ -23,7 +23,8 @@ db = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
-    database="data_mbkm"
+    database="data_mbkm",
+    port = 3300
 )
 CORS(app)
 def load_data(data_path):
@@ -284,4 +285,56 @@ def add_data():
         print(e)
         return jsonify({"message": "Failed to add data"}), 500
     app.run(debug=True)
+@app.route('/get_data', methods=['GET'])
+def get_data():
+    try:
+        cursor = db.cursor(dictionary=True)
+        query = "SELECT * FROM mahasiswa"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        cursor.close()
+        return jsonify(rows)
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "Failed to fetch data"}), 500
+@app.route('/data_predict', methods=['GET'])
+def data_predict():
+    try:
+        cursor = db.cursor(dictionary=True)
+        query = "SELECT * FROM mahasiswa"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        cursor.close()
 
+        if not rows:
+            return jsonify({"message": "No data available for prediction"}), 404
+
+        data = pd.DataFrame(rows)
+        original_test_data = data[['nama', 'nim', 'jurusan', 'status_kemahasiswaan']].copy()
+        test_data = data.drop(columns=['id', 'nama', 'nim', 'jurusan', 'scan_ktp', 'upload_sertifikat', 'upload_cv', 'upload_surat_rekomendasi'])
+
+        test_data = test_data.astype(str)
+
+        label_encoders = joblib.load('label_encoders.pkl')
+        scaler = joblib.load('scaler.pkl')
+
+        encoded_test_data = encode_test_data(test_data, label_encoders)
+        encoded_test_data_scaled = normalize_data(encoded_test_data, scaler)
+
+        svm_model = joblib.load('svm_model_mbkm.pkl')
+
+        predictions = svm_model.predict(encoded_test_data_scaled)
+
+        original_test_data['lolos_mbkm'] = predictions
+        original_test_data['lolos_mbkm'] = original_test_data['lolos_mbkm'].apply(lambda x: 'Lolos' if x == 1 else 'Tidak Lolos')
+
+        result_json = original_test_data[['nama', 'nim', 'jurusan', 'status_kemahasiswaan', 'lolos_mbkm']].to_dict(orient='records')
+
+        return jsonify(result_json)
+
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "Failed to perform prediction"}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
