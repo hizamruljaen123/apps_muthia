@@ -36,7 +36,8 @@
                         <a href="#">Manajemen Data</a>
                         <ul>
                           <li><a id="open-modal-data">Data Mahasiswa</a></li>
-                          <li><a id="open-modal-hasil">Data Hasil</a></li>
+                          <li><a id="open-modal-hasil">Data Testing Model</a></li>
+                          <li><a id="open-modal-data-latih" onclick="openExcel()">Data Latih Model</a></li>
                         </ul>
                       </li>
                     </ul>
@@ -45,7 +46,7 @@
                     </p>
                     <ul class="menu-list">
                       <li><a id="open-modal-train-model">Training Model</a></li>
-                      <li><a id="open-modal-chart">Visualisasi Hasil</a></li>
+                      <!-- <li><a id="open-modal-chart">Visualisasi Hasil</a></li> -->
                     </ul>
                   </aside>
                 </div>
@@ -54,61 +55,32 @@
                 <div class="column is-three-quarters">
                   <div class="content">
                     <h1 class="title">Dashboard</h1>
+					<hr>
                     <!-- Cards -->
-                    <div class="columns">
-                      <div class="column">
-                        <div class="card">
-                          <header class="card-header">
-                            <p class="card-header-title">Jumlah Mahasiswa</p>
-                          </header>
-                          <div class="card-content">
-                            <div class="content">
-                              Content for card 1.
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="column">
-                        <div class="card">
-                          <header class="card-header">
-                            <p class="card-header-title">Jumlah Lolos/Tidak Lolos</p>
-                          </header>
-                          <div class="card-content">
-                            <div class="content">
-                              Content for card 2.
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-          
+                    <h3>Hasil Klaifikasi</h3>
                     <!-- Table -->
-					<h1 class="title">Daftar Mahasiswa</h1>
                     <div class="table-wrapper">
                       <div class="table-container">
                         <div class="table-scroll">
                           <table class="table is-fullwidth is-striped">
                             <thead>
                               <tr>
-                                <th>ID Data</th>
-                                <th>Nama</th>
-                                <th>NIM</th>
-                                <th>Jurusan</th>
-                                <th>Status Kemahasiswaan</th>
-                                <th>Pernah Ikut MBMK</th>
-                                <th>Pernah MBKM Apapun</th>
-                                <th>Lolos MBKM</th>
-                                <th>Performa IPK</th>
-                                <th>Nilai IPK</th>
-                                <th>Ikut Organisasi</th>
-                                <th>Jumlah Organisasi</th>
-                                <th>Scan KTP</th>
-                                <th>Upload Sertifikat</th>
-                                <th>Upload CV</th>
-                                <th>Upload Surat Rekomendasi</th>
+								<th>Nama</th>
+								<th>NIM</th>
+								<th>Jurusan</th>
+								<th>Status Kemahasiswaan</th>
+								<th>Performa IPK</th>
+								<th>Nilai IPK</th>
+								<th>Ikut Organisasi</th>
+								<th>Jumlah Organisasi</th>
+								<th>Scan KTP</th>
+								<th>Upload Sertifikat</th>
+								<th>Upload CV</th>
+								<th>Upload Surat Rekomendasi</th>
+								<th>Lolos MBKM</th>
                               </tr>
                             </thead>
-                            <tbody id="dataTable">
+                            <tbody id="svm_result">
                               <!-- Data Rows -->
                             </tbody>
                           </table>
@@ -126,123 +98,122 @@
 		<div class="modal" id="modal">
 			<div class="modal-background"></div>
 			<div class="modal-card">
-			  <header class="modal-card-head">
-				<p class="modal-card-title">Input Data Mahasiswa</p>
-				<button class="delete" aria-label="close" id="close-modal"></button>
-			  </header>
-			  <section class="modal-card-body">
-				<!-- Form -->
-				<form>
-				  <div class="columns">
-					<div class="column">
-					  <div class="field">
-						<label class="label">ID Data</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="ID Data" name="id_data">
+				<header class="modal-card-head">
+					<p class="modal-card-title">Input Data Mahasiswa</p>
+					<button class="delete" aria-label="close" id="close-modal"></button>
+				</header>
+				<section class="modal-card-body">
+					<!-- Form -->
+					<form id="student-form" enctype="multipart/form-data">
+						<div class="columns">
+							<div class="column">
+								
+								<div class="field">
+									<label class="label">Nama</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Nama" name="nama" value="John Doe">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">NIM</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="NIM" name="nim" value="210202304">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Jurusan</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Jurusan" name="jurusan" value="Teknik Informatika">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Status Kemahasiswaan</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Status Kemahasiswaan" name="status_kemahasiswaan" value="Aktif">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Pernah Ikut MBMK</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Pernah Ikut MBMK" name="pernah_ikut_mbmk" value="Ya">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Pernah MBKM Apapun</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Pernah MBKM Apapun" name="pernah_mbkm_apapun" value="Tidak">
+									</div>
+								</div>
+							</div>
+							<div class="column">
+								<div class="field">
+									<label class="label">Lolos MBKM</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Lolos MBKM" name="lolos_mbkm" value="Belum">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Performa IPK</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Performa IPK" name="performa_ipk" value="Baik">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Nilai IPK</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Nilai IPK" name="nilai_ipk" value="3.75">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Ikut Organisasi</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Ikut Organisasi" name="ikut_organisasi" value="Ya">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Jumlah Organisasi</label>
+									<div class="control">
+										<input class="input" type="text" placeholder="Jumlah Organisasi" name="jumlah_organisasi" value="3">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Scan KTP</label>
+									<div class="control">
+										<input class="input" type="file" name="scan_ktp">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Upload Sertifikat</label>
+									<div class="control">
+										<input class="input" type="file" name="upload_sertifikat">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Upload CV</label>
+									<div class="control">
+										<input class="input" type="file" name="upload_cv">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Upload Surat Rekomendasi</label>
+									<div class="control">
+										<input class="input" type="file" name="upload_surat_rekomendasi">
+									</div>
+								</div>
+							</div>
 						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Nama</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Nama" name="nama">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">NIM</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="NIM" name="nim">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Jurusan</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Jurusan" name="jurusan">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Status Kemahasiswaan</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Status Kemahasiswaan" name="status_kemahasiswaan">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Pernah Ikut MBMK</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Pernah Ikut MBMK" name="pernah_ikut_mbmk">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Pernah MBKM Apapun</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Pernah MBKM Apapun" name="pernah_mbkm_apapun">
-						</div>
-					  </div>
-					</div>
-					<div class="column">
-					  <div class="field">
-						<label class="label">Lolos MBKM</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Lolos MBKM" name="lolos_mbkm">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Performa IPK</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Performa IPK" name="performa_ipk">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Nilai IPK</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Nilai IPK" name="nilai_ipk">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Ikut Organisasi</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Ikut Organisasi" name="ikut_organisasi">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Jumlah Organisasi</label>
-						<div class="control">
-						  <input class="input" type="text" placeholder="Jumlah Organisasi" name="jumlah_organisasi">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Scan KTP</label>
-						<div class="control">
-						  <input class="input" type="file" name="scan_ktp">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Upload Sertifikat</label>
-						<div class="control">
-						  <input class="input" type="file" name="upload_sertifikat">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Upload CV</label>
-						<div class="control">
-						  <input class="input" type="file" name="upload_cv">
-						</div>
-					  </div>
-					  <div class="field">
-						<label class="label">Upload Surat Rekomendasi</label>
-						<div class="control">
-						  <input class="input" type="file" name="upload_surat_rekomendasi">
-						</div>
-					  </div>
-					</div>
-				  </div>
-				</form>
-			  </section>
-			  <footer class="modal-card-foot">
-				<button class="button is-success">Save changes</button>
-				<button class="button" id="close-modal-footer">Cancel</button>
-			  </footer>
+						<button type="button" onclick="sendData()">Submit</button>
+					</form>
+					
+				</section>
+				<footer class="modal-card-foot">
+					<button class="button is-success" onclick="sendData()">Save changes</button>
+					<button class="button" id="close-modal-footer">Cancel</button>
+				</footer>
 			</div>
 		</div>
+		
+		
 		  
 		<!-- Data Modal -->
 		<div class="modal" id="dataModal">
@@ -254,6 +225,9 @@
 				</header>
 				<section class="modal-card-body">
 					<!-- Responsive Table -->
+					<button class="button is-link is-small" onclick="loadMahasiswaData()">Refresh Tabel</button>
+					<br>
+					<br>
 					<div class="table-container">
 						<table class="table is-fullwidth is-striped">
 							<thead>
@@ -276,7 +250,7 @@
 									<th>Upload Surat Rekomendasi</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id="mahasiswa_data">
 								<!-- Example Row -->
 								<tr>
 									<td>1</td>
@@ -311,7 +285,7 @@
 			<div class="modal-background"></div>
 			<div class="modal-card">
 				<header class="modal-card-head">
-					<p class="modal-card-title">Hasil Klasifikasi Mahasiswa</p>
+					<p class="modal-card-title">Data Latih Model SVM</p>
 					<button class="delete" aria-label="close" id="close-modal-hasil"></button>
 				</header>
 				<section class="modal-card-body">
@@ -402,6 +376,18 @@
 				<footer class="modal-card-foot">
 					<button class="button" id="close-modal-chart-footer">Close</button>
 				</footer>
+			</div>
+		</div>
+
+		<div id="success-modal" class="modal">
+			<div class="modal-background"></div>
+			<div class="modal-card">
+				<header class="modal-card-head">
+					<p class="modal-card-title">Sukses</p>
+				</header>
+				<section class="modal-card-body">
+					<p>Data berhasil dikirim!</p>
+				</section>
 			</div>
 		</div>
 	</body>

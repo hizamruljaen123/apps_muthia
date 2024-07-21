@@ -251,4 +251,9 @@ body {
       margin-bottom: 20px;
     }
   }
-  
+.modal.is-active {
+    display: flex;
+}
+#success-modal {
+    display: none;
+}

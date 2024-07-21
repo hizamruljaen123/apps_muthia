@@ -13,7 +13,6 @@ function loadData() {
 
                 data.data.forEach((row, index) => {
                     var newRow = `<tr>
-                          <td>${row.id_data}</td>
                           <td>${row.nama}</td>
                           <td>${row.nim}</td>
                           <td>${row.jurusan}</td>
@@ -41,7 +40,7 @@ function loadData() {
         });
 }
 
-loadData();
+hasilSVM();
 
 function fetchDataHasil() {
     fetch('/predict')
@@ -66,32 +65,133 @@ function fetchDataHasil() {
       })
       .catch(error => console.error('Error fetching data:', error));
   }
-// Fungsi untuk mengirim data form ke URL /add_data dengan metode POST
+// Fungsi untuk mengirim data
 function sendData() {
-    const formData = new FormData(document.querySelector('form'));
-    const data = {};
-
-    formData.forEach((value, key) => {
-      data[key] = value;
-    });
+    const form = document.getElementById('student-form');
+    const formData = new FormData(form);
 
     fetch('/add_data', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+        method: 'POST',
+        body: formData
     })
     .then(response => response.json())
     .then(result => {
-      console.log('Success:', result);
-      // Tutup modal setelah sukses mengirim data
-      document.getElementById('modal').classList.remove('is-active');
+        console.log('Success:', result);
+        // Tampilkan modal sukses
+        showModal();
+        document.getElementById('modal').classList.remove('is-active');
     })
     .catch(error => {
-      console.error('Error:', error);
+        console.error('Error:', error);
     });
-  }
+}
+
+// Fungsi untuk menampilkan modal sukses
+function showModal() {
+    const modal = document.getElementById('success-modal');
+    modal.style.display = 'flex'; // Tampilkan modal
+
+    // Sembunyikan modal setelah 2 detik
+    setTimeout(() => {
+        modal.style.display = 'none'; // Sembunyikan modal
+    }, 2000);
+}
+async function loadMahasiswaData() {
+    try {
+        const response = await fetch('/load_mahasiswa_data');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        const tbody = document.getElementById('mahasiswa_data');
+
+        // Clear existing rows
+        tbody.innerHTML = '';
+
+        // Populate table rows
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.id_data}</td>
+                <td>${item.nama}</td>
+                <td>${item.nim}</td>
+                <td>${item.jurusan}</td>
+                <td>${item.status_kemahasiswaan}</td>
+                <td>${item.pernah_ikut_mbmk}</td>
+                <td>${item.pernah_mbkm_apapun}</td>
+                <td>${item.lolos_mbkm}</td>
+                <td>${item.performa_ipk}</td>
+                <td>${item.nilai_ipk}</td>
+                <td>${item.ikut_organisasi}</td>
+                <td>${item.jumlah_organisasi}</td>
+                <td><a class="button is-link is-small" href="/static/upload/${item.scan_ktp}" target="_blank">Lihat Dokumen</a></td>
+                <td><a class="button is-link is-small" href="/static/upload/${item.upload_sertifikat}" target="_blank">Lihat Dokumen</a></td>
+                <td><a class="button is-link is-small" href="/static/upload/${item.upload_cv}" target="_blank">Lihat Dokumen</a></td>
+                <td><a class="button is-link is-small" href="/static/upload/${item.upload_surat_rekomendasi}" target="_blank">Lihat Dokumen</a></td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+async function openExcel() {
+    try {
+        const response = await fetch('/open_excel'); // Mengirim permintaan GET ke API
+        const data = await response.json(); // Mengubah respons menjadi JSON
+        
+        if (response.ok) {
+            alert(data.message); // Menampilkan pesan sukses
+        } else {
+            alert(`Error: ${data.error}`); // Menampilkan pesan error
+        }
+    } catch (error) {
+        console.error('Terjadi kesalahan:', error);
+        alert('Terjadi kesalahan saat membuka file Excel.');
+    }
+}
+    async function hasilSVM() {
+        try {
+            const response = await fetch('/svm_predict');
+            const data = await response.json();
+
+            // Handle category counts if needed
+            console.log('Category Counts:', data.category_counts);
+
+            // Get the results array from the JSON data
+            const results = data.results;
+
+            // Get the table body element by its ID
+            const tableBody = document.querySelector('#svm_result');
+            tableBody.innerHTML = ''; // Clear existing content
+
+            // Populate table rows
+            results.forEach(result => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${result.nama}</td>
+                    <td>${result.nim}</td>
+                    <td>${result.jurusan}</td>
+                    <td>${result.status_kemahasiswaan}</td>
+                    <td>${result.performa_ipk}</td>
+                    <td>${result.nilai_ipk}</td>
+                    <td>${result.ikut_organisasi}</td>
+                    <td>${result.jumlah_organisasi}</td>
+                    <td>${result.scan_ktp}</td>
+                    <td>${result.upload_sertifikat}</td>
+                    <td>${result.upload_cv}</td>
+                    <td>${result.upload_surat_rekomendasi}</td>
+                    <td>${result.lolos_mbkm}</td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
 
   document.addEventListener('DOMContentLoaded', function () {
     // Tambahkan event listener ke tombol 'Save changes'
@@ -122,6 +222,7 @@ document.getElementById('close-modal-footer').addEventListener('click', function
 });
 document.getElementById('open-modal-data').addEventListener('click', function() {
     document.getElementById('dataModal').classList.add('is-active');
+    loadMahasiswaData()
 });
 
 document.getElementById('close-modal-data').addEventListener('click', function() {
